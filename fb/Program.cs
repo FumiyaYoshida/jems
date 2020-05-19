@@ -10,25 +10,30 @@ namespace kadai
     {
         static void Main(string[] args)
         {
+            string s = "";
+            string newS = "";
             for(int i = 1; i <= 100; i++)
             {
                 if(i % (3 * 5) == 0)
                 {
-                    Console.WriteLine("FizzBuzz");
+                    newS = "FizzBuzz";
                 }
                 else if(i % 5 == 0)
                 {
-                    Console.WriteLine("Buzz");
+                    newS = "Buzz";
                 }
                 else if(i % 3 == 0)
                 {
-                    Console.WriteLine("Fizz");
+                    newS = "Fizz";
                 }
                 else
                 {
-                    Console.WriteLine("{0}", i);
+                    newS = i.ToString();
                 }
+                s = s + newS + "\n";
             }
+            Console.WriteLine(s.Trim());
+            Console.ReadLine();
         }
     }
 }
