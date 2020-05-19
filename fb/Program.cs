@@ -8,32 +8,30 @@ namespace kadai
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            string s = "";
-            string newS = "";
-            for(int i = 1; i <= 100; i++)
+            var sb = new StringBuilder();
+
+            for (int i = 1; i <= 100; i++)
             {
-                if(i % (3 * 5) == 0)
+                string line = "";
+
+                if (i % 3 == 0)
                 {
-                    newS = "FizzBuzz";
+                    line += "Fizz";
                 }
-                else if(i % 5 == 0)
+                if (i % 5 == 0)
                 {
-                    newS = "Buzz";
+                    line += "Buzz";
                 }
-                else if(i % 3 == 0)
+                if (string.IsNullOrEmpty(line))
                 {
-                    newS = "Fizz";
+                    line = i.ToString();
                 }
-                else
-                {
-                    newS = i.ToString();
-                }
-                s = s + newS + "\n";
+                sb.AppendLine(line);
             }
-            Console.WriteLine(s.Trim());
-            Console.ReadLine();
+            Console.WriteLine(sb);
+            Console.ReadKey();
         }
     }
 }
