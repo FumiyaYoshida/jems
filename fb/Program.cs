@@ -10,30 +10,33 @@ namespace kadai
     {
         static void Main(string[] args)
         {
-            string s = "";
-            string newS = "";
-            for(int i = 1; i <= 100; i++)
+            StringBuilder sb = new StringBuilder("");
+            string s5 = "Buzz";
+            string s3 = "Fizz";
+            string s15 = s3 + s5;
+
+            for (int i = 1; i <= 100; i++)
             {
                 if(i % (3 * 5) == 0)
                 {
-                    newS = "FizzBuzz";
+                    sb.Append(s15);
                 }
                 else if(i % 5 == 0)
                 {
-                    newS = "Buzz";
+                    sb.Append(s5);
                 }
                 else if(i % 3 == 0)
                 {
-                    newS = "Fizz";
+                    sb.Append(s3);
                 }
                 else
                 {
-                    newS = i.ToString();
+                    sb.Append(i.ToString());
                 }
-                s = s + newS + "\n";
+                sb.Append("\n");
             }
-            Console.WriteLine(s.Trim());
-            Console.ReadLine();
+            Console.WriteLine(sb);
+            Console.ReadKey();
         }
     }
 }
