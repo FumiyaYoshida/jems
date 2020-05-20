@@ -1,10 +1,18 @@
 # JEMS
 This is used to work.
 
+## jemsPC
+### Git
+C:\Users\E728.ES\jems
+
+### Visual Studio
+C:\Users\E728.ES\source\repos\
+
+### SVN
+C:\svn
+
 ## fb : FizzBuzz
 FizzBuzz code.
-
-**C:\Users\E728.ES\source\repos\kadai**
 
 ## ic : Integer calculation
 
