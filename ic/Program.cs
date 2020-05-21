@@ -10,67 +10,110 @@ namespace mycalc
     {
         static void Main(string[] args)
         {
-            try
+            if (args.Length == 3)
             {
-                //引数の個数の確認
-                if (args.Length != 3)
+                if (Regex.IsMatch(args[0], "^[0-9]+$"))
                 {
-                    throw new ArgumentException();
-                }
-                int int1 = int.Parse(args[0]);
-                int int2 = int.Parse(args[2]);
-                try
-                {
-                    checked
+                    try
                     {
-                        var ope = args[1];
-                        int ans;
-                        switch (ope)
+                        int int1 = int.Parse(args[0]);
+                        if (Regex.IsMatch(args[1], "^\\+$|^-$|^\\*$|^/$"))
                         {
-                            case "/":
-                                int ansQuo = int1 / int2;
-                                int ansRem = int1 % int2;
-                                Console.WriteLine($"{int1} / {int2} = {ansQuo} ({ansRem})");
-                                break;
-                            case "*":
-                                ans = int1 * int2;
-                                Console.WriteLine($"{int1} * {int2} = {ans}");
-                                break;
-                            case "+":
-                                ans = int1 + int2;
-                                Console.WriteLine($"{int1} + {int2} = {ans}");
-                                break;
-                            case "-":
-                                ans = int1 - int2;
-                                Console.WriteLine($"{int1} - {int2} = {ans}");
-                                break;
-                            default:
-                                throw new ArgumentException();
+                            if (Regex.IsMatch(args[2], "^[0-9]+$"))
+                            {
+                                try
+                                {
+                                    int int2 = int.Parse(args[2]);
+                                    if (!(args[1] == "/" && args[2] == "0"))
+                                    {
+                                        calc(int1, int2, args[1]);
+                                    }
+                                    else
+                                    {
+                                        stdErrOut("割り算の場合、割る数に0を指定できません。");
+                                    }
+                                }
+                                catch (OverflowException)
+                                {
+                                    stdErrOut("3つ目の引数にオーバーフローが発生しました。");
+                                }
+                            }
+                            else
+                            {
+                                stdErrOut("3つ目の引数には整数値を入力してください。");
+                            }
+                        }
+                        else
+                        {
+                            stdErrOut("2つ目の引数には四則演算子(+,-,*,/)を一つ入力してください。");
                         }
                     }
+                    catch (OverflowException)
+                    {
+                        stdErrOut("1つ目の引数にオーバーフローが発生しました。");
+                    }
                 }
-                catch (OverflowException)
+                else
                 {
-                    Console.WriteLine("計算結果にオーバーフローが発生しました。");
-                }
-                catch (DivideByZeroException)
-                {
-                    Console.WriteLine("0で割ることはできません。");
+                    stdErrOut("1つ目の引数には整数値を入力してください。");
                 }
             }
-            catch (ArgumentException)
+            else
             {
-                Console.WriteLine("以下のように入力してください。");
-                Console.WriteLine("mycalc (整数値) (四則演算子) (整数値)");
+                stdErrOut("次のように入力してください。" +
+                    "\r\n> mycalc (整数値) (四則演算子) (整数値)" +
+                    "\r\n四則演算子の所には+,-,*,/のいずれかを入力してください。");
+            }
+        }
+        static void calc(int int1, int int2, string ope)
+        {
+            try
+            {
+                checked
+                {
+                    int ans;
+                    switch (ope)
+                    {
+                        case "+":
+                            ans = int1 + int2;
+                            stdOut($"{int1} + {int2} = {ans}");
+                            break;
+                        case "-":
+                            ans = int1 - int2;
+                            stdOut($"{int1} - {int2} = {ans}");
+                            break;
+                        case "*":
+                            ans = int1 * int2;
+                            stdOut($"{int1} * {int2} = {ans}");
+                            break;
+                        case "/":
+                            int ansQuo = int1 / int2;
+                            int ansRem = int1 % int2;
+                            stdOut($"{int1} / {int2} = {ansQuo} ({ansRem})");
+                            break;
+                        default:
+                            throw new FormatException();
+                    }
+                }
             }
             catch (OverflowException)
             {
-                Console.WriteLine("引数にオーバーフローが発生しました。");
+                stdErrOut("異常が発生しました。プログラムを終了します。" +
+                    "\r\n（計算でオーバーフローが発生しました。）");
             }
             catch (FormatException)
             {
-                Console.WriteLine("整数値の部分に数字以外の文字が含まれています。");
+                stdErrOut("異常が発生しました。プログラムを終了します。" +
+                    "\r\n（四則演算子の判定でエラーが発生しました。）");
             }
+        }
+        static void stdOut(string msg)
+        {
+            Console.WriteLine(msg);
+        }
+        static void stdErrOut(string msg)
+        {
+            Console.Error.WriteLine(msg);
         }
     }
 }
