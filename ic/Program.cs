@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
-namespace intCalc
+namespace mycalc
 {
     class Program
     {
@@ -13,71 +13,53 @@ namespace intCalc
         {
             try
             {
-                string arg = Console.ReadLine();
-                string[] arr = arg.Split(' ');
-                int int1;
-                int int2;
-
                 //引数の個数の確認
-                if (arr.Length != 4)
+                if (args.Length != 3)
                 {
                     throw new ArgumentException();
                 }
 
-                //最初の引数がmycalcであることの確認
-                if (arr[0] != "mycalc")
-                {
-                    throw new ArgumentException();
-                }
+                int int1 = int.Parse(args[0]);
+                int int2 = int.Parse(args[2]);
 
-                //2つ目の引数がint型に収まる整数値であるかの確認
-                if (Regex.IsMatch(arr[1], "^[0-9]+$"))
+                try
                 {
-                    int1 = int.Parse(arr[1]);
-                }
-                else
-                {
-                    throw new ArgumentException();
-                }
-
-                //4つ目の引数がint型に収まる整数値であることの確認
-                if (Regex.IsMatch(arr[3], "^[0-9]+$"))
-                {
-                    int2 = int.Parse(arr[3]);
-                }
-                else
-                {
-                    throw new ArgumentException();
-                }
-
-                //3つ目の引数値によって、どんな演算がされるかが決まる。
-                checked
-                {
-                    var ope = arr[2];
-                    int ans;
-
-                    switch (ope)
+                    checked
                     {
-                        case "/":
-                            int ansQuo = int1 / int2;
-                            int ansRem = int1 % int2;
-                            Console.WriteLine($"{int1} * {int2} = {ansQuo} ({ansRem})");
-                            break;
-                        case "*":
-                            ans = int1 * int2;
-                            Console.WriteLine($"{int1} * {int2} = {ans}");
-                            break;
-                        case "+":
-                            ans = int1 + int2;
-                            Console.WriteLine($"{int1} * {int2} = {ans}");
-                            break;
-                        case "-":
-                            ans = int1 - int2;
-                            Console.WriteLine($"{int1} * {int2} = {ans}");
-                            break;
-                        default:
-                            throw new ArgumentException();
+                        var ope = args[1];
+                        int ans;
+
+                        switch (ope)
+                        {
+                            case "/":
+                                int ansQuo = int1 / int2;
+                                int ansRem = int1 % int2;
+                                Console.WriteLine($"{int1} / {int2} = {ansQuo} ({ansRem})");
+                                break;
+                            case "*":
+                                ans = int1 * int2;
+                                Console.WriteLine($"{int1} * {int2} = {ans}");
+                                break;
+                            case "+":
+                                ans = int1 + int2;
+                                Console.WriteLine($"{int1} + {int2} = {ans}");
+                                break;
+                            case "-":
+                                ans = int1 - int2;
+                                Console.WriteLine($"{int1} - {int2} = {ans}");
+                                break;
+                            default:
+                                throw new ArgumentException();
+                        }
                     }
+                }
+                catch (OverflowException)
+                {
+                    Console.WriteLine("計算結果にオーバーフローが発生しました。");
+                }
+                catch (DivideByZeroException)
+                {
+                    Console.WriteLine("0で割ることはできません。");
                 }
             }
             catch (ArgumentException)
@@ -87,11 +69,11 @@ namespace intCalc
             }
             catch (OverflowException)
             {
-                Console.WriteLine("オーバーフローが発生しました。");
+                Console.WriteLine("引数にオーバーフローが発生しました。");
             }
-            catch (DivideByZeroException)
+            catch (FormatException)
             {
-                Console.WriteLine("0で割ることはできません。");
+                Console.WriteLine("整数値の部分に数字以外の文字列が含まれています。");
             }
         }
     }
