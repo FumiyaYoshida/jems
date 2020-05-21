@@ -26,7 +26,7 @@ namespace mycalc
                     && ValidatePair(ope, int2, out errorMessage)
                  )
                 {
-                    calc(int1, int2, args[1]);
+                    Calc(int1, int2, args[1]);
                 }
             }
 
@@ -35,7 +35,7 @@ namespace mycalc
                 Console.Error.WriteLine(errorMessage);
             }
         }
-        static void calc(int int1, int int2, string ope)
+        static void Calc(int int1, int int2, string ope)
         {
             try
             {
