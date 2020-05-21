@@ -11,6 +11,13 @@ C:\Users\E728.ES\source\repos\
 ### SVN
 C:\svn
 
+## myWin
+### Git
+C:\Users\fy134\jems
+
+### Visual Studio
+C:\Users\fy134\source\repos
+
 ## fb : FizzBuzz
 FizzBuzz code.
 
@@ -18,8 +25,6 @@ FizzBuzz code.
 
 整数値(int)、四則演算子(/,*,+,-)、整数値の3つの引数を取り、式と演算結果を表示するプログラム。
 実行プログラム名はmycalcとすること。
-
-ic3 = 730
 
 例
 
