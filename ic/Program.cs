@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-
 namespace mycalc
 {
     class Program
@@ -18,17 +17,14 @@ namespace mycalc
                 {
                     throw new ArgumentException();
                 }
-
                 int int1 = int.Parse(args[0]);
                 int int2 = int.Parse(args[2]);
-
                 try
                 {
                     checked
                     {
                         var ope = args[1];
                         int ans;
-
                         switch (ope)
                         {
                             case "/":
@@ -62,13 +58,18 @@ namespace mycalc
                     Console.WriteLine("0で割ることはできません。");
                 }
             }
+            catch (ArgumentException)
+            {
+                Console.WriteLine("以下のように入力してください。");
+                Console.WriteLine("mycalc (整数値) (四則演算子) (整数値)");
+            }
             catch (OverflowException)
             {
                 Console.WriteLine("引数にオーバーフローが発生しました。");
             }
             catch (FormatException)
             {
-                Console.WriteLine("整数値の部分に数字以外の文字列が含まれています。");
+                Console.WriteLine("整数値の部分に数字以外の文字が含まれています。");
             }
         }
     }
