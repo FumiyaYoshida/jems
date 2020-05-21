@@ -10,110 +10,126 @@ namespace mycalc
     {
         static void Main(string[] args)
         {
-            if (args.Length == 3)
+            string usage = @"2つの整数を計算します。
+>mycalc 整数1 演算子(+|-|*|/) 整数2
+例) 2 + 3";
+            string errorMessage;
+            if (args.Length != 3)
             {
-                if (Regex.IsMatch(args[0], "^[0-9]+$"))
-                {
-                    try
-                    {
-                        int int1 = int.Parse(args[0]);
-                        if (Regex.IsMatch(args[1], "^\\+$|^-$|^\\*$|^/$"))
-                        {
-                            if (Regex.IsMatch(args[2], "^[0-9]+$"))
-                            {
-                                try
-                                {
-                                    int int2 = int.Parse(args[2]);
-                                    if (!(args[1] == "/" && args[2] == "0"))
-                                    {
-                                        calc(int1, int2, args[1]);
-                                    }
-                                    else
-                                    {
-                                        stdErrOut("割り算の場合、割る数に0を指定できません。");
-                                    }
-                                }
-                                catch (OverflowException)
-                                {
-                                    stdErrOut("3つ目の引数にオーバーフローが発生しました。");
-                                }
-                            }
-                            else
-                            {
-                                stdErrOut("3つ目の引数には整数値を入力してください。");
-                            }
-                        }
-                        else
-                        {
-                            stdErrOut("2つ目の引数には四則演算子(+,-,*,/)を一つ入力してください。");
-                        }
-                    }
-                    catch (OverflowException)
-                    {
-                        stdErrOut("1つ目の引数にオーバーフローが発生しました。");
-                    }
-                }
-                else
-                {
-                    stdErrOut("1つ目の引数には整数値を入力してください。");
-                }
+                errorMessage = usage;
             }
             else
             {
-                stdErrOut("次のように入力してください。" +
-                    "\r\n> mycalc (整数値) (四則演算子) (整数値)" +
-                    "\r\n四則演算子の所には+,-,*,/のいずれかを入力してください。");
+                if (ValidateOperand(args[0], out int int1, out errorMessage)
+                    && ValidateOperater(args[1], out string ope, out errorMessage)
+                    && ValidateOperand(args[2], out int int2, out errorMessage)
+                    && ValidatePair(ope, int2, out errorMessage)
+                 )
+                {
+                    Calc(int1, int2, args[1]);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                Console.Error.WriteLine(errorMessage);
             }
         }
-        static void calc(int int1, int int2, string ope)
+        static void Calc(int int1, int int2, string ope)
         {
             try
             {
                 checked
                 {
                     int ans;
+                    string output;
                     switch (ope)
                     {
                         case "+":
                             ans = int1 + int2;
-                            stdOut($"{int1} + {int2} = {ans}");
+                            output = $"{int1} + {int2} = {ans}";
                             break;
                         case "-":
                             ans = int1 - int2;
-                            stdOut($"{int1} - {int2} = {ans}");
+                            output = $"{int1} - {int2} = {ans}";
                             break;
                         case "*":
                             ans = int1 * int2;
-                            stdOut($"{int1} * {int2} = {ans}");
+                            output = $"{int1} * {int2} = {ans}";
                             break;
                         case "/":
                             int ansQuo = int1 / int2;
                             int ansRem = int1 % int2;
-                            stdOut($"{int1} / {int2} = {ansQuo} ({ansRem})");
+                            output = $"{int1} / {int2} = {ansQuo} ({ansRem})";
                             break;
                         default:
                             throw new FormatException();
                     }
+                    Console.WriteLine(output);
                 }
             }
             catch (OverflowException)
             {
-                stdErrOut("異常が発生しました。プログラムを終了します。" +
+                Console.Error.WriteLine("異常が発生しました。プログラムを終了します。" +
                     "\r\n（計算でオーバーフローが発生しました。）");
             }
             catch (FormatException)
             {
-                stdErrOut("異常が発生しました。プログラムを終了します。" +
+                Console.Error.WriteLine("異常が発生しました。プログラムを終了します。" +
                     "\r\n（四則演算子の判定でエラーが発生しました。）");
             }
         }
-        static void stdOut(string msg)
+        static bool ValidateOperand(string operand, out int value, out string errorMessage)
         {
-            Console.WriteLine(msg);
+            value = 0;
+            errorMessage = null;
+            if (Regex.IsMatch(operand, "^[0-9]+$"))
+            {
+                try
+                {
+                    value = int.Parse(operand);
+                }
+                catch
+                {
+                    errorMessage = $"引数でオーバーフローが発生しました。";
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                errorMessage = "正しい整数値を指定してください。";
+                return false;
+            }
         }
-        static void stdErrOut(string msg)
+        static bool ValidateOperater(string operand, out string value, out string errorMessage)
         {
-            Console.Error.WriteLine(msg);
+            value = "";
+            errorMessage = null;
+            if (Regex.IsMatch(operand, "^\\+$|^-$|^\\*$|^/$"))
+            {
+
+                value = operand;
+                return true;
+            }
+            else
+            {
+                errorMessage = "2つ目の引数には四則演算子(+,-,*,/)を入力してください。";
+                return false;
+            }
+        }
+        static bool ValidatePair(string ope, int int2, out string errorMessage)
+        {
+            errorMessage = null;
+            if (!(ope == "/" && int2 == 0))
+            {
+                return true;
+            }
+            else
+            {
+                errorMessage = "割り算の場合、割る数に0を指定できません。";
+                return false;
+            }
         }
     }
 }
