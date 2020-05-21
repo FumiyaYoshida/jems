@@ -62,11 +62,6 @@ namespace mycalc
                     Console.WriteLine("0で割ることはできません。");
                 }
             }
-            catch (ArgumentException)
-            {
-                Console.WriteLine("以下のように入力してください。");
-                Console.WriteLine("mycalc (整数値) (四則演算子) (整数値)");
-            }
             catch (OverflowException)
             {
                 Console.WriteLine("引数にオーバーフローが発生しました。");
