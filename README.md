@@ -109,6 +109,10 @@ git checkout AAA
 
 -> change now branch to ‘AAA’ branch
 
+git pull origin master
+
+-> sync with remote repository
+
 
 ### merge
 
@@ -116,9 +120,7 @@ github of browser
 
 push "Compare & pull request"
 
-git pull origin master
 
--> sync with remote repository
 
 ### if you want to clone
 
