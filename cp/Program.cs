@@ -6,7 +6,15 @@ namespace mycalc
     {
         static void Main(string[] args)
         {
-            Stream inputStream = Console.OpenStandardInput();
+            Stream inputStream;
+            if (args.Length == 2 && args[0] == "/i")
+            {
+                inputStream = new FileStream(args[1], FileMode.Open);
+            }
+            else
+            {
+                inputStream = Console.OpenStandardInput();
+            }
             using (var reader = new StreamReader(inputStream))
             {
                 int readChar;
