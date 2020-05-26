@@ -14,76 +14,58 @@ namespace mycalc
 >mycalc /i ファイル名1⏎ → ファイル名1から入力し計算結果を標準出力に出力
 >mycalc /i ファイル名1 /o ファイル名2⏎ → ファイル1から入力し計算結果をファイル2に出力
 >mycalc 1+2+3+4+5⏎ → 引数を1行のみの入力とし計算結果を標準出力に出力";
-            string outputContent;
 
             try
             {
-                switch (args.Length)
+                if (args.Length == 0)
                 {
-                    case 0:
-                        Calclate(Console.OpenStandardInput());
-                        break;
-                    case 1:
-                        if (args[0] == "/?")
+                    Calclate(Console.OpenStandardInput(), Console.OpenStandardOutput());
+                }
+                else if (args[0] == "/?")
+                {
+                    Calclate(new MemoryStream(Encoding.Unicode.GetBytes(usage)), Console.OpenStandardOutput());
+                }
+                else if (args[0] == "/i")
+                {
+                    if (args.Length == 1)
+                    {
+                        throw new MyAppException("読み込むファイルが指定されませんでした。");
+                    }
+                    else if (args.Length == 2)
+                    {
+                        using (var fs = new FileStream(args[1], FileMode.Open))
                         {
-                            Console.WriteLine(usage);
+                            Calclate(fs, Console.OpenStandardOutput());
                         }
-                        else
+                    }
+                    else if (args[2] == "/o")
+                    {
+                        if (args.Length == 3)
                         {
-                            var ms = new MemoryStream(Encoding.Unicode.GetBytes(args[0]));
-                            outputContent = Calclate2(ms);
-                            outputContent = outputContent.Replace(" ", "");
-                            Console.Write(outputContent);
+                            throw new MyAppException("書き込むファイルが指定されませんでした。");
                         }
-                        break;
-                    case 2:
-                        if (args[0] == "/i")
+                        else if (args.Length == 4)
                         {
-                            try
+                            using (var fsOpen = new FileStream(args[1], FileMode.Open))
+                            using (var fsClose = new FileStream(args[3], FileMode.Create))
                             {
-                                using (var fs = new FileStream(args[1], FileMode.Open))
-                                {
-                                    Calclate(fs);
-                                }
-                            }
-                            catch (FileNotFoundException ex)
-                            {
-                                throw new MyAppException("ファイルが見つかりませんでした。", ex);
-                            }
-                        }
-                        else
-                        {
-                            throw new FormatException();
-                        }
-                        break;
-                    case 4:
-                        if (args[0] == "/i" && args[2] == "/o")
-                        {
-                            try
-                            {
-                                using (var fs = new FileStream(args[1], FileMode.Open))
-                                {
-                                    outputContent = Calclate2(fs);
-                                }
-                            }
-                            catch (FileNotFoundException ex)
-                            {
-                                throw new MyAppException("ファイルが見つかりませんでした。", ex);
-                            }
-
-                            using (var fs = new FileStream(args[3], FileMode.Create))
-                            {
-                                OutputFile(outputContent, fs);
+                                Calclate(fsOpen, fsClose);
                             }
                         }
                         else
                         {
-                            throw new FormatException();
+                            throw new MyAppException("引数が正しくありません。");
                         }
-                        break;
-                    default:
-                        throw new FormatException();
-
+                    }
+                    else
+                    {
+                        throw new MyAppException("引数が正しくありません。");
+                    }
+                }
+                else
+                {
+                    var ms = new MemoryStream(Encoding.Unicode.GetBytes(args[0]));
+                    Calclate(ms, Console.OpenStandardOutput());
                 }
             }
             catch (MyAppException ex)
