@@ -18,45 +18,14 @@ namespace mycalc
 >mycalc /i ファイル名1⏎ → ファイル名1から入力し計算結果を標準出力に出力
 >mycalc /i ファイル名1 /o ファイル名2⏎ → ファイル1から入力し計算結果をファイル2に出力
 >mycalc 1+2+3+4+5⏎ → 引数を1行のみの入力とし計算結果を標準出力に出力";
-            string inputFile = null;
-            string outputFile = null;
-            string inputContent = "";
+            string inputFile;
+            string outputFile;
+            string inputContent;
 
 
             try
             {
-                //inputFile, outputFile = Analysis(args)
-                if (args.Length > 0)
-                {
-                    if (args[0] == "/?")
-                    {
-                        Console.Error.WriteLine(usage);
-                        return;
-                    }
-                    else if (args[0] == "/i")
-                    {
-                        if (args.Length == 2)
-                        {
-                            inputFile = args[1];
-                        }
-                        else if (args.Length == 4 && args[2] == "/o")
-                        {
-                            inputFile = args[1];
-                            outputFile = args[3];
-                        }
-                        else
-                        {
-                            throw new MyAppException("引数が正しくありません。");
-                        }
-                    }
-                    else
-                    {
-                        foreach (var arg in args)
-                        {
-                            inputContent += arg + " ";
-                        }
-                    }
-                }
+                (inputFile, outputFile, inputContent) = AnalysisArgs(args, usage);
 
                 Stream inputStream = null;
                 Stream outputStream = null;
@@ -117,12 +86,50 @@ namespace mycalc
             Console.ReadKey();
         }
 
-        /*
-        static (Stream, Stream) Analysis()
+        static (string, string, string) AnalysisArgs(string[] args, string usage)
         {
+            string inputFile = null;
+            string outputFile = null;
+            string inputContent = "";
 
+            if (args.Length > 0)
+            {
+                if (args[0] == "/?")
+                {
+                    Console.Error.WriteLine(usage);
+                    Exit();
+                }
+                else if (args[0] == "/i")
+                {
+                    if (args.Length == 2)
+                    {
+                        inputFile = args[1];
+                    }
+                    else if (args.Length == 4 && args[2] == "/o")
+                    {
+                        inputFile = args[1];
+                        outputFile = args[3];
+                    }
+                    else
+                    {
+                        throw new MyAppException("引数が正しくありません。");
+                    }
+                }
+                else
+                {
+                    foreach (var arg in args)
+                    {
+                        inputContent += arg + " ";
+                    }
+                }
+            }
+            return (inputFile, outputFile, inputContent);
         }
-        */
+
+        private static void Exit()
+        {
+            throw new NotImplementedException();
+        }
 
         static void Calclate(Stream inputStream, Stream outputStream)
         {
