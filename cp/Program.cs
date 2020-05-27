@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -7,6 +9,8 @@ namespace mycalc
 {
     class Program
     {
+        static Encoding encode = Encoding.GetEncoding("shift_jis");
+
         static void Main(string[] args)
         {
             string usage = @"計算機プログラムを実行します。
@@ -14,43 +18,31 @@ namespace mycalc
 >mycalc /i ファイル名1⏎ → ファイル名1から入力し計算結果を標準出力に出力
 >mycalc /i ファイル名1 /o ファイル名2⏎ → ファイル1から入力し計算結果をファイル2に出力
 >mycalc 1+2+3+4+5⏎ → 引数を1行のみの入力とし計算結果を標準出力に出力";
+            string inputFile = null;
+            string outputFile = null;
+            string inputContent = "";
+
 
             try
             {
-                if (args.Length == 0)
+                //inputFile, outputFile = Analysis(args)
+                if (args.Length > 0)
                 {
-                    Calclate(Console.OpenStandardInput(), Console.OpenStandardOutput());
-                }
-                else if (args[0] == "/?")
-                {
-                    Calclate(new MemoryStream(Encoding.Unicode.GetBytes(usage)), Console.OpenStandardOutput());
-                }
-                else if (args[0] == "/i")
-                {
-                    if (args.Length == 1)
+                    if (args[0] == "/?")
                     {
-                        throw new MyAppException("読み込むファイルが指定されませんでした。");
+                        Console.Error.WriteLine(usage);
+                        return;
                     }
-                    else if (args.Length == 2)
+                    else if (args[0] == "/i")
                     {
-                        using (var fs = new FileStream(args[1], FileMode.Open))
+                        if (args.Length == 2)
                         {
-                            Calclate(fs, Console.OpenStandardOutput());
+                            inputFile = args[1];
                         }
-                    }
-                    else if (args[2] == "/o")
-                    {
-                        if (args.Length == 3)
+                        else if (args.Length == 4 && args[2] == "/o")
                         {
-                            throw new MyAppException("書き込むファイルが指定されませんでした。");
-                        }
-                        else if (args.Length == 4)
-                        {
-                            using (var fsOpen = new FileStream(args[1], FileMode.Open))
-                            using (var fsClose = new FileStream(args[3], FileMode.Create))
-                            {
-                                Calclate(fsOpen, fsClose);
-                            }
+                            inputFile = args[1];
+                            outputFile = args[3];
                         }
                         else
                         {
@@ -59,13 +51,59 @@ namespace mycalc
                     }
                     else
                     {
-                        throw new MyAppException("引数が正しくありません。");
+                        foreach (var arg in args)
+                        {
+                            inputContent += arg + " ";
+                        }
                     }
                 }
-                else
+
+                Stream inputStream = null;
+                Stream outputStream = null;
+
+                try
                 {
-                    var ms = new MemoryStream(Encoding.Unicode.GetBytes(args[0]));
-                    Calclate(ms, Console.OpenStandardOutput());
+                    if (!string.IsNullOrEmpty(inputFile))
+                    {
+                        try
+                        {
+                            inputStream = new FileStream(inputFile, FileMode.Open);
+                        }
+                        catch (IOException ex)
+                        {
+                            throw new MyAppException($"入力ファイル{inputFile}を開けませんでした。{ex.GetType().Name} {ex.Message}");
+                        }
+                    }
+                    else if (!string.IsNullOrEmpty(inputContent))
+                    {
+                        inputStream = new MemoryStream(encode.GetBytes(inputContent));
+                    }
+
+                    if (!string.IsNullOrEmpty(outputFile))
+                    {
+                        try
+                        {
+                            outputStream = new FileStream(outputFile, FileMode.Create);
+                        }
+                        catch (IOException ex)
+                        {
+                            throw new MyAppException($"出力ファイル{outputFile}を更新できません。{ex.GetType().Name} {ex.Message}");
+                        }
+                    }
+
+                    Calclate(inputStream ?? Console.OpenStandardInput(),
+                                outputStream ?? Console.OpenStandardOutput());
+                }
+                finally
+                {
+                    if (inputStream != null)
+                    {
+                        inputStream.Close();
+                    }
+                    if (outputStream != null)
+                    {
+                        outputStream.Close();
+                    }
                 }
             }
             catch (MyAppException ex)
@@ -74,22 +112,31 @@ namespace mycalc
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine("異常が発生しました。プログラムを終了します。\r\n" + ex.Message);
+                Console.Error.WriteLine("異常が発生しました。プログラムを終了します。\r\n" + ex.Message + ex.GetType().FullName);
             }
+            Console.ReadKey();
         }
+
+        /*
+        static (Stream, Stream) Analysis()
+        {
+
+        }
+        */
 
         static void Calclate(Stream inputStream, Stream outputStream)
         {
-            var encode = Encoding.GetEncoding("shift_jis");
             using (var reader = new StreamReader(inputStream, encode))
             using (var writer = new StreamWriter(outputStream, encode))
             {
                 int readChar;
                 while ((readChar = reader.Read()) != -1)
                 {
+                    Debug.WriteLine($"{DateTime.Now} {readChar}");
                     char c = (char)readChar;
 
                     writer.Write(c);
+                    writer.Flush();
                 }
             }
         }
